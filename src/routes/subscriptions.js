@@ -6,6 +6,36 @@ import { authenticate } from '../middleware/auth.js';
 const router = Router();
 
 // =====================================================
+// PUBLIC ENDPOINT (untuk testing)
+// =====================================================
+
+// Public endpoint untuk test koneksi database
+router.get('/public/packages', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT id, name, description, price, duration_days, max_devices, 
+             daily_message_limit, max_broadcast_recipients, is_active, created_at
+      FROM subscription_packages 
+      WHERE is_active = true
+      ORDER BY price ASC
+    `);
+    res.json({ 
+      success: true,
+      message: 'Database connected successfully',
+      total: result.rows.length,
+      packages: result.rows 
+    });
+  } catch (error) {
+    console.error('Public get packages error:', error);
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to get packages',
+      details: error.message 
+    });
+  }
+});
+
+// =====================================================
 // PACKAGES MANAGEMENT
 // =====================================================
 
